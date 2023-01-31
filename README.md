@@ -8,6 +8,10 @@
 ```console
 git clone https://github.com/SirojiddinYakubov/grpc_service.git
 ```
+Создайте `.env` файл. 
+```
+cp .env .env.example
+```
 Первый запуск
 ```
 make run-docker-up
@@ -20,4 +24,4 @@ make run-test
 ```
 make run-pgadmin
 ```
-Перейдите по этой ссылке[по этой ссылке](http://0.0.0.0:15432/), чтобы открыть pgAdmin. Пароль: `postgres`
+Перейдите по этой ссылке [по этой ссылке](http://0.0.0.0:15432/), чтобы открыть pgAdmin. Пароль: `postgres`
