@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "course-svc"
+version = "0.1.0"
+description = ""
+authors = ["Sirojiddin Yakubov <yakubov9791999@gmail.com>"]
+readme = "README.md"
+packages = [{include = "course_svc"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^1.10.4"
+python-dotenv = "^0.21.1"
+grpcio = "^1.51.1"
+grpcio-tools = "^1.51.1"
+pytest = "^7.2.1"
+pytest-asyncio = "^0.20.3"
+asyncpg = "^0.27.0"
+sqlalchemy = "1.4.41"
+sqlmodel = "^0.0.8"
+mock = "^5.0.1"
+alembic = "^1.9.2"
+sqlalchemy-utils = "^0.39.0"
+uvicorn = "^0.20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

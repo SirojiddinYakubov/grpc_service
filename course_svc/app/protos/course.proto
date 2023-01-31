@@ -1,0 +1,12 @@
+//python -m grpc_tools.protoc -I protos --python_out=grpc_generated_files --grpc_python_out=grpc_generated_files protos/*.proto
+syntax = "proto3";
+package course;
+import "google/protobuf/wrappers.proto";
+
+message CheckCourseRequest {
+  string course_id = 1;
+}
+
+service CourseService {
+  rpc check_course (CheckCourseRequest) returns (google.protobuf.BoolValue);
+}

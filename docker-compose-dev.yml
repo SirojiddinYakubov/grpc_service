@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  database:
+    container_name: database
+    image: postgres:latest
+    restart: always
+    env_file: ".env"
+    volumes:
+      - course_svc_pgdata:/var/lib/postgresql/data:rw
+    expose:
+      - ${DATABASE_PORT}
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_HOST_AUTH_METHOD=md5
+      - POSTGRESQL_POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    networks:
+      - course_svc_network
+
+
+  course_svc:
+    container_name: course_svc
+    build: ./course_svc
+    image: course_svc_image:latest
+    restart: always
+    volumes:
+      - ./course_svc:/code
+    ports:
+      - ${SVC_PORT}:${SVC_PORT}
+    env_file: ".env"
+    depends_on:
+      - database
+    networks:
+      - course_svc_network
+
+
+  redis_server:
+    container_name: redis_server
+    image: "redis:alpine"
+    restart: always
+    expose:
+      - ${REDIS_PORT}
+    env_file: ".env"
+    networks:
+      - course_svc_network
+
+  minio_server:
+    image: minio/minio:latest
+    restart: always
+    container_name: minio_server
+    volumes:
+      - ./minio/data:/data
+#    expose:
+#      - "9000"
+#      - "9091"
+    ports:
+      - "9091:9090"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BROWSER_REDIRECT_URL: http://stash.localhost
+    command: "server /data --console-address ':9090'"
+    networks:
+      - course_svc_network
+
+networks:
+  course_svc_network:
+    name: course_svc_network
+    driver: bridge
+
+volumes:
+  course_svc_pgdata:
+    name: course_svc_pgdata
