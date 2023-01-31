@@ -35,3 +35,5 @@ run-docker-build:
 	docker-compose -f docker-compose-dev.yml build
 run-docker-up:
 	docker-compose -f docker-compose-dev.yml up --build
+run-pgadmin:
+	docker-compose -f pgadmin.yml up --build
