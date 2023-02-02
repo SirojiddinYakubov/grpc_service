@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 6809803e2d03
+Revision ID: 99c910f38e9d
 Revises: 
-Create Date: 2023-02-02 11:51:38.330420
+Create Date: 2023-02-02 12:07:29.490391
 
 """
 from alembic import op
@@ -14,7 +14,7 @@ from typing import Text # custom added
 
 
 # revision identifiers, used by Alembic.
-revision = '6809803e2d03'
+revision = '99c910f38e9d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -44,6 +44,39 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_Media_id'), 'Media', ['id'], unique=False)
+    op.create_table('Permissions',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('deleted_at', sa.DateTime(), nullable=True),
+    sa.Column('permission_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('display_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_Permissions_id'), 'Permissions', ['id'], unique=False)
+    op.create_table('Roles',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('deleted_at', sa.DateTime(), nullable=True),
+    sa.Column('role_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('display_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_Roles_id'), 'Roles', ['id'], unique=False)
+    op.create_table('Users',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('deleted_at', sa.DateTime(), nullable=True),
+    sa.Column('first_name', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('last_name', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('mobile', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('verified_at', sa.DateTime(), nullable=True),
+    sa.Column('email', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_Users_id'), 'Users', ['id'], unique=False)
     op.create_table('CourseTopics',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
@@ -83,6 +116,30 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_ImageMedia_id'), 'ImageMedia', ['id'], unique=False)
+    op.create_table('RolePermissions',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('deleted_at', sa.DateTime(), nullable=True),
+    sa.Column('role_id', sa.Integer(), nullable=True),
+    sa.Column('permission_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['permission_id'], ['Permissions.id'], ),
+    sa.ForeignKeyConstraint(['role_id'], ['Roles.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_RolePermissions_id'), 'RolePermissions', ['id'], unique=False)
+    op.create_table('UserRoles',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('deleted_at', sa.DateTime(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('role_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['role_id'], ['Roles.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_UserRoles_id'), 'UserRoles', ['id'], unique=False)
     op.create_table('CourseCategories',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
@@ -180,12 +237,22 @@ def downgrade():
     op.drop_table('Courses')
     op.drop_index(op.f('ix_CourseCategories_id'), table_name='CourseCategories')
     op.drop_table('CourseCategories')
+    op.drop_index(op.f('ix_UserRoles_id'), table_name='UserRoles')
+    op.drop_table('UserRoles')
+    op.drop_index(op.f('ix_RolePermissions_id'), table_name='RolePermissions')
+    op.drop_table('RolePermissions')
     op.drop_index(op.f('ix_ImageMedia_id'), table_name='ImageMedia')
     op.drop_table('ImageMedia')
     op.drop_index(op.f('ix_FileMedia_id'), table_name='FileMedia')
     op.drop_table('FileMedia')
     op.drop_index(op.f('ix_CourseTopics_id'), table_name='CourseTopics')
     op.drop_table('CourseTopics')
+    op.drop_index(op.f('ix_Users_id'), table_name='Users')
+    op.drop_table('Users')
+    op.drop_index(op.f('ix_Roles_id'), table_name='Roles')
+    op.drop_table('Roles')
+    op.drop_index(op.f('ix_Permissions_id'), table_name='Permissions')
+    op.drop_table('Permissions')
     op.drop_index(op.f('ix_Media_id'), table_name='Media')
     op.drop_table('Media')
     op.drop_index(op.f('ix_Locales_id'), table_name='Locales')

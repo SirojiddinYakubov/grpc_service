@@ -10,7 +10,7 @@ git clone https://github.com/SirojiddinYakubov/grpc_service.git
 ```
 Создайте `.env` файл. 
 ```
-cp .env .env.example
+cp .env.example .env 
 ```
 Первый запуск
 ```

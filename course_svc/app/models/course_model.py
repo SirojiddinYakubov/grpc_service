@@ -13,12 +13,6 @@ class BaseCourseModel(BaseModel):
     sort: Optional[int] = Field(default=1)
 
 
-class Locales(BaseModel, table=True):
-    name: str
-    code: str = Field(unique=True)
-    is_main: bool = Field(default=False)
-
-
 class CourseTopics(BaseCourseModel, table=True):
     parent_id: int = Field(default=None, foreign_key="CourseTopics.id")
     locale_id: int = Field(default=None, foreign_key="Locales.id")

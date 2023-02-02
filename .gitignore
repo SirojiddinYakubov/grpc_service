@@ -344,3 +344,5 @@ poetry.toml
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all,pycharm
 
 minio
+app/.idea/
+/course_svc/app/.idea/
