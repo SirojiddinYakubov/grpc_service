@@ -34,6 +34,19 @@ class BaseUUIDModel(SQLModel):
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 
+class BaseModel(SQLModel):
+    id: int = Field(
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
+    updated_at: Optional[datetime] = Field(
+        default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}
+    )
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    deleted_at: Optional[datetime]
+
+
 class SaTranslationFieldComparator(JSONB.Comparator):
     def __eq__(self, other: Any) -> bool:
         print(36, other)

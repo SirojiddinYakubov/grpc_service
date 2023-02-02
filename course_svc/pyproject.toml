@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Sirojiddin Yakubov <yakubov9791999@gmail.com>"]
 readme = "README.md"
-packages = [{include = "course_svc"}]
+#packages = [{include = "course_svc"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

@@ -1,4 +1,4 @@
-from app.models.base_uuid_model import BaseUUIDModel, TranslationField
+from app.models.base_model import BaseUUIDModel, TranslationField
 from uuid import UUID
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, Union

@@ -2,15 +2,15 @@ import asyncio
 import logging
 from grpc import aio
 
-from app.helpers import course
 from core.config import settings
 from grpc_generated_files import course_pb2, course_pb2_grpc
+from helpers import course
 
 
 class CourseServicer(course_pb2_grpc.CourseServiceServicer):
     async def check_course(self, request, context):
         print("CourseServicer received request")
-        return course.check_course(request, context)
+        return await course.check_course(request, context)
 
 
 async def serve():
@@ -21,6 +21,9 @@ async def serve():
     logging.info("Starting server on %s", listen_addr)
 
     await server.start()
+
+    await course.check_db()
+
     await server.wait_for_termination()
 
 
