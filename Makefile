@@ -19,7 +19,7 @@ define SERVERS_JSON
 }
 endef
 export SERVERS_JSON
-
+export PYTHONPATH=$$PWD/course_svc/app:$$PYTHONPATH
 help:
 	@echo "make"
 	@echo "    hello"
@@ -27,13 +27,15 @@ help:
 
 hello:
 	echo "Hello, World"
-run-test:
-	pytest -c course_svc/pytest.ini
-run-server:
+test:
+	pytest -s -c course_svc/pytest.ini
+run:
 	export PYTHONPATH=$$PWD/course_svc/app:$$PYTHONPATH; cd course_svc && python app/server.py
-run-docker-build:
+docker-build:
 	docker-compose -f docker-compose-dev.yml build
-run-docker-up:
+docker-up:
 	docker-compose -f docker-compose-dev.yml up --build
-run-pgadmin:
+pgadmin:
 	docker-compose -f pgadmin.yml up --build
+proto:
+	cd course_svc/app && python -m grpc_tools.protoc -I protos --python_out=grpc_generated_files --grpc_python_out=grpc_generated_files protos/*.proto

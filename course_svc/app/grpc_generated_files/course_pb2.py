@@ -11,18 +11,21 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import wrappers_pb2 as google_dot_protobuf_dot_wrappers__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63ourse.proto\x12\x06\x63ourse\x1a\x1egoogle/protobuf/wrappers.proto\"\'\n\x12\x43heckCourseRequest\x12\x11\n\tcourse_id\x18\x01 \x01(\t2W\n\rCourseService\x12\x46\n\x0c\x63heck_course\x12\x1a.course.CheckCourseRequest\x1a\x1a.google.protobuf.BoolValueb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63ourse.proto\x12\x06\x63ourse\"\xb3\x01\n\x0b\x43ourseTopic\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tparent_id\x18\x03 \x01(\x05\x12\x11\n\tlocale_id\x18\x04 \x01(\x05\x12\x11\n\tis_active\x18\x05 \x01(\x08\x12\x0c\n\x04sort\x18\x06 \x01(\x05\x12\x12\n\ncreated_at\x18\x07 \x01(\x03\x12\x12\n\nupdated_at\x18\x08 \x01(\x03\x12\x12\n\ndeleted_at\x18\t \x01(\x03\"c\n\x18\x43reateCourseTopicRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tparent_id\x18\x03 \x01(\x05\x12\x11\n\tlocale_id\x18\x04 \x01(\x05\"u\n\x19\x43reateCourseTopicResponse\x12,\n\x0fsuccess_payload\x18\x01 \x01(\x0b\x32\x13.course.CourseTopic\x12\x15\n\rerror_payload\x18\x02 \x01(\t\x12\x13\n\x0bstatus_code\x18\x03 \x01(\x05\x32i\n\rCourseService\x12X\n\x11\x43reateCourseTopic\x12 .course.CreateCourseTopicRequest\x1a!.course.CreateCourseTopicResponseb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'course_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _CHECKCOURSEREQUEST._serialized_start=56
-  _CHECKCOURSEREQUEST._serialized_end=95
-  _COURSESERVICE._serialized_start=97
-  _COURSESERVICE._serialized_end=184
+  _COURSETOPIC._serialized_start=25
+  _COURSETOPIC._serialized_end=204
+  _CREATECOURSETOPICREQUEST._serialized_start=206
+  _CREATECOURSETOPICREQUEST._serialized_end=305
+  _CREATECOURSETOPICRESPONSE._serialized_start=307
+  _CREATECOURSETOPICRESPONSE._serialized_end=424
+  _COURSESERVICE._serialized_start=426
+  _COURSESERVICE._serialized_end=531
 # @@protoc_insertion_point(module_scope)

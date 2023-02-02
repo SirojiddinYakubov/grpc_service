@@ -14,14 +14,14 @@ cp .env.example .env
 ```
 Первый запуск
 ```
-make run-docker-up
+make docker-up
 ```
 Запуск тесты
 ```
-make run-test
+make test
 ```
 Запуск pgAdmin
 ```
-make run-pgadmin
+make pgadmin
 ```
 Перейдите по этой ссылке [по этой ссылке](http://0.0.0.0:15432/), чтобы открыть pgAdmin. Пароль: `postgres`

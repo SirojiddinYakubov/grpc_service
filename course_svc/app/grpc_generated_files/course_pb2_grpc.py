@@ -3,7 +3,6 @@
 import grpc
 
 from . import course_pb2 as course__pb2
-from google.protobuf import wrappers_pb2 as google_dot_protobuf_dot_wrappers__pb2
 
 
 class CourseServiceStub(object):
@@ -15,17 +14,17 @@ class CourseServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.check_course = channel.unary_unary(
-                '/course.CourseService/check_course',
-                request_serializer=course__pb2.CheckCourseRequest.SerializeToString,
-                response_deserializer=google_dot_protobuf_dot_wrappers__pb2.BoolValue.FromString,
-                )
+        self.CreateCourseTopic = channel.unary_unary(
+            '/course.CourseService/CreateCourseTopic',
+            request_serializer=course__pb2.CreateCourseTopicRequest.SerializeToString,
+            response_deserializer=course__pb2.CreateCourseTopicResponse.FromString,
+        )
 
 
 class CourseServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def check_course(self, request, context):
+    def CreateCourseTopic(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -34,34 +33,34 @@ class CourseServiceServicer(object):
 
 def add_CourseServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'check_course': grpc.unary_unary_rpc_method_handler(
-                    servicer.check_course,
-                    request_deserializer=course__pb2.CheckCourseRequest.FromString,
-                    response_serializer=google_dot_protobuf_dot_wrappers__pb2.BoolValue.SerializeToString,
-            ),
+        'CreateCourseTopic': grpc.unary_unary_rpc_method_handler(
+            servicer.CreateCourseTopic,
+            request_deserializer=course__pb2.CreateCourseTopicRequest.FromString,
+            response_serializer=course__pb2.CreateCourseTopicResponse.SerializeToString,
+        ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'course.CourseService', rpc_method_handlers)
+        'course.CourseService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
- # This class is part of an EXPERIMENTAL API.
+# This class is part of an EXPERIMENTAL API.
 class CourseService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def check_course(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/course.CourseService/check_course',
-            course__pb2.CheckCourseRequest.SerializeToString,
-            google_dot_protobuf_dot_wrappers__pb2.BoolValue.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+    def CreateCourseTopic(request,
+                          target,
+                          options=(),
+                          channel_credentials=None,
+                          call_credentials=None,
+                          insecure=False,
+                          compression=None,
+                          wait_for_ready=None,
+                          timeout=None,
+                          metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/course.CourseService/CreateCourseTopic',
+                                             course__pb2.CreateCourseTopicRequest.SerializeToString,
+                                             course__pb2.CreateCourseTopicResponse.FromString,
+                                             options, channel_credentials,
+                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

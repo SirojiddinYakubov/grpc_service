@@ -1,9 +1,9 @@
-from sqlmodel import Field
+import sqlalchemy as db
 
-from .base_model import BaseModel
+from .base_model import Base
 
 
-class Locales(BaseModel, table=True):
-    name: str
-    code: str = Field(unique=True)
-    is_main: bool = Field(default=False)
+class Locales(Base):
+    name = db.Column(db.String, nullable=False)
+    code = db.Column(db.String, nullable=False, unique=True)
+    is_main = db.Column(db.Boolean, default=False)

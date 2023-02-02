@@ -8,9 +8,9 @@ from helpers import course
 
 
 class CourseServicer(course_pb2_grpc.CourseServiceServicer):
-    async def check_course(self, request, context):
+    async def CreateCourseTopic(self, request, context):
         print("CourseServicer received request")
-        return await course.check_course(request, context)
+        return await course.CreateCourseTopic(request, context)
 
 
 async def serve():
@@ -22,7 +22,7 @@ async def serve():
 
     await server.start()
 
-    await course.check_db()
+    # await course.check_db()
 
     await server.wait_for_termination()
 

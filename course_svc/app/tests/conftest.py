@@ -5,11 +5,12 @@ import grpc
 import mock
 import pytest
 import pytest_asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlmodel import SQLModel
-from sqlmodel.ext.asyncio.session import AsyncSession
 
 from db.session import async_engine
+from app.tests.factories import *
+from app.models import Base
 
 
 @pytest.fixture(scope="session")
@@ -27,12 +28,12 @@ async def async_session() -> AsyncSession:
 
     async with session() as s:
         async with async_engine.begin() as conn:
-            await conn.run_sync(SQLModel.metadata.create_all)
+            await conn.run_sync(Base.metadata.create_all)
 
         yield s
 
     async with async_engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
+        await conn.run_sync(Base.metadata.drop_all)
 
     await async_engine.dispose()
 

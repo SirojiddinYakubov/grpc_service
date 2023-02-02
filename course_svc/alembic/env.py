@@ -10,6 +10,7 @@ import pathlib
 
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
+from app.models import Base
 from app.models import *  # necessarily to import something from file where your models are stored
 
 settings = Settings()
@@ -21,7 +22,7 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-target_metadata = SQLModel.metadata
+target_metadata = Base.metadata
 
 
 # other values from the config, defined by the needs of env.py,

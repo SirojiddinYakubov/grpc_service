@@ -2,9 +2,8 @@ import asyncio
 from sys import modules
 
 import asyncpg
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlmodel.ext.asyncio.session import AsyncSession
 
 from core.config import settings
 

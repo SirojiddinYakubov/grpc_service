@@ -1,35 +1,38 @@
-from datetime import datetime
-from typing import Optional
+import sqlalchemy as db
+from sqlalchemy.orm import relationship
 
-from pydantic import EmailStr
-from sqlmodel import Field
-
-from .base_model import BaseModel
+from .base_model import Base
 
 
-class Roles(BaseModel, table=True):
-    role_name: str
-    display_name: str
+class Roles(Base):
+    role_name = db.Column(db.String, nullable=False, unique=True)
+    display_name = db.Column(db.String, nullable=True)
 
 
-class Permissions(BaseModel, table=True):
-    permission_name: str
-    display_name: str
+class Permissions(Base):
+    permission_name = db.Column(db.String, nullable=False, unique=True)
+    display_name = db.Column(db.String, nullable=True)
 
 
-class RolePermissions(BaseModel, table=True):
-    role_id: int = Field(default=None, foreign_key="Roles.id")
-    permission_id: int = Field(default=None, foreign_key="Permissions.id")
+class RolePermissions(Base):
+    role_id = db.Column(db.Integer, db.ForeignKey(Roles.id), primary_key=True)
+    # role = relationship('Roles', foreign_keys='RolePermissions.role_id')
+
+    permission_id = db.Column(db.Integer, db.ForeignKey(Permissions.id), primary_key=True)
+    # permission = relationship('Permissions', foreign_keys='RolePermissions.role_id')
 
 
-class Users(BaseModel, table=True):
-    first_name: Optional[str]
-    last_name: Optional[str]
-    mobile: Optional[str]
-    verified_at: Optional[datetime]
-    email: EmailStr
+class Users(Base):
+    first_name = db.Column(db.String, nullable=True)
+    last_name = db.Column(db.String, nullable=True)
+    mobile = db.Column(db.String, nullable=True)
+    verified_at = db.Column(db.DateTime, nullable=True)
+    email = db.Column(db.String, nullable=False, unique=True)
 
 
-class UserRoles(BaseModel, table=True):
-    user_id: int = Field(default=None, foreign_key="Users.id")
-    role_id: int = Field(default=None, foreign_key="Roles.id")
+class UserRoles(Base):
+    role_id = db.Column(db.Integer, db.ForeignKey(Roles.id), primary_key=True)
+    # role = relationship('Roles', foreign_keys='UserRoles.role_id')
+
+    user_id = db.Column(db.Integer, db.ForeignKey(Users.id), primary_key=True)
+    # user = relationship('Users', foreign_keys='UserRoles.role_id')

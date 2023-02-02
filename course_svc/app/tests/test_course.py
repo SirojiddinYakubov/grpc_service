@@ -2,22 +2,32 @@ import pytest
 
 from grpc_generated_files import course_pb2
 
+from app.models import Locales
+
 
 @pytest.fixture
-def course_data(request):
+async def create_course_topic_data(request, locale_factory, course_topic_factory):
+    locale_obj = await locale_factory.create()
+    course_topic = await course_topic_factory.create(locale_id=locale_obj.id)
     data = {
         'valid':
-            ("b1f3b6e2-a1d5-4932-98d4-616ac8fcb24b", True),
-        'invalid':
-            ("b1f3b6e2-a1d5-4932-98d4-616ac8fcb242", False),
+            (200, "Dasturlash", "This is desc", course_topic.id, None),
+        # 'invalid':
+        #     (400, None, "This is desc", None, None),
     }
     return data[request.param]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('course_data', ['valid', 'invalid'], indirect=True)
-async def test_check_course(course_data, mock_context, course_servicer):
-    course_id, excepted = course_data
-    grpc_request = course_pb2.CheckCourseRequest(course_id=course_id)
-    response = await course_servicer.check_course(grpc_request, mock_context)
-    assert excepted == response.value
+@pytest.mark.parametrize('create_course_topic_data', ['valid'], indirect=True)
+async def test_create_course_topic(create_course_topic_data, mock_context, course_servicer):
+    status_code, name, description, parent_id, locale_id = create_course_topic_data
+    grpc_request = course_pb2.CreateCourseTopicRequest(
+        name=name,
+        description=description,
+        parent_id=parent_id,
+        locale_id=locale_id
+    )
+
+    response = await course_servicer.CreateCourseTopic(grpc_request, mock_context)
+    assert status_code == response.status_code

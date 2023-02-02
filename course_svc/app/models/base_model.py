@@ -1,84 +1,39 @@
-import json
-from typing import Optional, Any
+import re
+import datetime
 
-from sqlalchemy import types
-from sqlalchemy.dialects.postgresql import JSONB
-
-from app.utils.uuid6 import uuid7, UUID
-from sqlmodel import SQLModel as _SQLModel, Field, Column
-from sqlalchemy.orm import declared_attr
-from datetime import datetime
-
-# id: implements proposal uuid7 draft4
+import sqlalchemy as db
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.declarative import declarative_base
+import sqlalchemy.orm.query
+import sqlalchemy.event
+from typing import Set, Optional
 
 
-from app.core.config import settings
+def camelcase_to_snakecase(name: str) -> str:
+    pattern = re.compile(r'(?<!^)(?=[A-Z])')
+    return pattern.sub('_', name).lower()
 
 
-class SQLModel(_SQLModel):
-    @declared_attr  # type: ignore
-    def __tablename__(cls) -> str:
-        return cls.__name__
+class Base(object):
+    @declared_attr
+    def __tablename__(cls):
+        return camelcase_to_snakecase(cls.__name__)
+
+    # __table_args__ = {'mysql_engine': 'InnoDB'}
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    created_at = db.Column('created_at', db.DateTime, default=datetime.datetime.now)
+    updated_at = db.Column('updated_at', db.DateTime, onupdate=datetime.datetime.now)
+    deleted_at = db.Column(db.DateTime, default=None)
 
 
-class BaseUUIDModel(SQLModel):
-    id: UUID = Field(
-        default_factory=uuid7,
-        primary_key=True,
-        index=True,
-        nullable=False,
-    )
-    updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}
-    )
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+Base = declarative_base(cls=Base)
 
-
-class BaseModel(SQLModel):
-    id: int = Field(
-        primary_key=True,
-        index=True,
-        nullable=False,
-    )
-    updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}
-    )
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
-    deleted_at: Optional[datetime]
-
-
-class SaTranslationFieldComparator(JSONB.Comparator):
-    def __eq__(self, other: Any) -> bool:
-        print(36, other)
-        return self.contains({"uz": other})
-
-
-class SaTranslationField(types.TypeDecorator):
-    impl: JSONB = JSONB()
-    cache_ok = True
-    comparator_factory = SaTranslationFieldComparator
-
-    def coerce_compared_value(self, op: Any, value: Any) -> types.TypeEngine[Any]:
-        print(45, op, value)
-        return self.impl.coerce_compared_value(op, value)
-
-    def process_bind_param(self, value: Any, dialect: Any) -> Optional[dict]:  # type: ignore
-        if isinstance(value, dict):
-            if not all(map(lambda k: k in settings.ALLOWED_LANGUAGES, value.keys())):
-                raise ValueError("This language cannot be added to the database")
-            return value
-        elif isinstance(value, str):
-            return dict(uz=value)
-        return dict()
-
-    def process_result_value(self, value: Any, dialect: Any) -> Optional[Any]:
-        # translated = value.get("uz")
-        return value
-
-
-def TranslationField(**kwargs: Any) -> Any:
-    return Field(sa_column=Column(SaTranslationField), nullable=False, default=dict(), **kwargs)
-
-# q = select(Region).filter(
-#            Region.title['uz'].astext.cast(String) == "Toshkent"
-#        )
+# @db.event.listens_for(db.orm.Mapper, 'refresh', named=True)
+# def on_instance_refresh(target: type,
+#                         context: db.orm.query.QueryContext,
+#                         attrs: Optional[Set[str]]):
+#     ssn: sqlalchemy.orm.Session = context.session
+#     # target.deleted_at = datetime.datetime.now
+#     print(38, target.id, attrs)
+#     return target

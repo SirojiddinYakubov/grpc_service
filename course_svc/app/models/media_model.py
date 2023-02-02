@@ -1,45 +1,33 @@
-from app.models.base_model import BaseUUIDModel, TranslationField
-from uuid import UUID
-from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional, Union
+import sqlalchemy as db
+from sqlalchemy.orm import relationship
+
+from .base_model import Base
 
 
-class MediaBase(SQLModel):
-    title: Optional[Union[dict, str]] = TranslationField()
-    description: Optional[Union[dict, str]] = TranslationField()
-    path: Optional[str]
+# class MediaBase(Base):
+#     __abstract__ = True
+#
+#     title = db.Column(db.String, nullable=False)
+#     description = db.Column(db.String, nullable=True)
+#     path = db.Column(db.String, nullable=True)
 
 
-class Media(BaseUUIDModel, MediaBase, table=True):
-    pass
+class Media(Base):
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=True)
+    path = db.Column(db.String, nullable=True)
 
 
-class ImageMediaBase(SQLModel):
-    file_format: Optional[str]
-    width: Optional[int]
-    height: Optional[int]
+class ImageMedia(Base):
+    file_format = db.Column(db.String, nullable=False)
+    width = db.Column(db.Integer, nullable=True)
+    height = db.Column(db.Integer, nullable=True)
+    media_id = db.Column(db.Integer, db.ForeignKey(Media.id))
+    # media = relationship('Media', foreign_keys='ImageMedia.media_id')
 
 
-class ImageMedia(BaseUUIDModel, ImageMediaBase, table=True):
-    media_id: Optional[UUID] = Field(default=None, foreign_key="Media.id")
-    media: Media = Relationship(
-        sa_relationship_kwargs={
-            "lazy": "selectin",
-            "primaryjoin": "ImageMedia.media_id==Media.id",
-        }
-    )
-
-
-class FileMediaBase(SQLModel):
-    file_format: Optional[str]
-    size: Optional[int]
-
-
-class FileMedia(BaseUUIDModel, FileMediaBase, table=True):
-    media_id: Optional[UUID] = Field(default=None, foreign_key="Media.id")
-    media: Media = Relationship(
-        sa_relationship_kwargs={
-            "lazy": "selectin",
-            "primaryjoin": "FileMedia.media_id==Media.id",
-        }
-    )
+class FileMedia(Base):
+    file_format = db.Column(db.String, nullable=False)
+    size = db.Column(db.Integer, nullable=True)
+    media_id = db.Column(db.Integer, db.ForeignKey(Media.id))
+    # media = relationship('Media', foreign_keys='ImageMedia.media_id')
