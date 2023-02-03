@@ -1,0 +1,8 @@
+syntax = "proto3";
+import "courses_types.proto";
+
+service CourseService {
+  //  rpc ListCourseTopic (ListCourseTopicRequest) returns (CourseTopicResponse);
+  rpc GetCourseTopics (courses.GetCourseTopicsRequest) returns (courses.CourseTopicsResponse);
+  rpc CreateCourseTopics (courses.CreateCourseTopicsRequest) returns (courses.CourseTopicsResponse);
+}

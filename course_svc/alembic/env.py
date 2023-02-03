@@ -1,9 +1,10 @@
 from __future__ import with_statement
 import asyncio
 from logging.config import fileConfig
-from sqlmodel import SQLModel, create_engine
-from sqlmodel.ext.asyncio.session import AsyncEngine
 from alembic import context
+from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncEngine
+
 from app.core.config import Settings
 import sys
 import pathlib

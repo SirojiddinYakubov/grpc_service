@@ -8,7 +8,6 @@ Create Date: ${create_date}
 from alembic import op
 import sqlalchemy as sa
 import sqlalchemy_utils
-import sqlmodel # added
 import app # custom added
 from typing import Text # custom added
 ${imports if imports else ""}

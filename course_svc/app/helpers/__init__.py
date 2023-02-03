@@ -1,1 +1,1 @@
-from .course_helper import course
+from .course_topic_helper import *

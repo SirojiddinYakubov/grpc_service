@@ -19,7 +19,7 @@ define SERVERS_JSON
 }
 endef
 export SERVERS_JSON
-export PYTHONPATH=$$PWD/course_svc/app:$$PYTHONPATH
+export PYTHONPATH=:$(PWD)/course_svc/app
 help:
 	@echo "make"
 	@echo "    hello"
@@ -30,7 +30,7 @@ hello:
 test:
 	pytest -s -c course_svc/pytest.ini
 run:
-	export PYTHONPATH=$$PWD/course_svc/app:$$PYTHONPATH; cd course_svc && python app/server.py
+	cd course_svc && python app/server.py
 docker-build:
 	docker-compose -f docker-compose-dev.yml build
 docker-up:

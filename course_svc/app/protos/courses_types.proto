@@ -1,0 +1,39 @@
+syntax = "proto3";
+package courses;
+import "locales_types.proto";
+
+message CourseTopics {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  CourseTopicsShort parent = 4;
+  locales.Locales locale = 5;
+  bool is_active = 6;
+  int32 sort = 7;
+  int64 created_at = 8;
+  int64 updated_at = 9;
+  int64 deleted_at = 10;
+}
+
+message CourseTopicsShort {
+  int64 id = 1;
+  string name = 2;
+}
+
+message GetCourseTopicsRequest {
+  int64 course_topic_id = 1;
+}
+
+message CreateCourseTopicsRequest {
+  string name = 1;
+  string description = 2;
+  int64 parent_id = 3;
+  int32 locale_id = 4;
+}
+
+
+message CourseTopicsResponse {
+  CourseTopics success_payload = 1;
+  string error_payload = 2;
+  int32 status_code = 3;
+}
