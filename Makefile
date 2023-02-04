@@ -39,3 +39,5 @@ pgadmin:
 	docker-compose -f pgadmin.yml up --build
 proto:
 	cd course_svc/app && python -m grpc_tools.protoc -I protos --python_out=grpc_generated_files --grpc_python_out=grpc_generated_files protos/*.proto
+alembic:
+	cd course_svc && alembic upgrade head

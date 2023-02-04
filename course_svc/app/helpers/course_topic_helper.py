@@ -12,27 +12,11 @@ from app.grpc_generated_files.courses_types_pb2 import (
     ListCourseTopicsResponse
 )
 
-# from app.models import Roles, Permissions, RolePermissions, Users, UserRoles
+from .base_helper import BaseHelper
 from crud.locales import LocalesCRUD
 
 
-class CourseTopicsHelper:
-    @classmethod
-    async def make_error_response(cls, model, e):
-        logging.error(e)
-        if len(e.args) == 2:
-            status_code, message = e.args
-        else:
-            status_code, message = 500, "Internal server error"
-        response = model(
-            error_payload=message,
-            status_code=status_code
-        )
-        return response
-
-    @classmethod
-    async def make_response(cls, model, obj, fields, other={}):
-        return model(**{f: getattr(obj, f) for f in fields}, **other)
+class CourseTopicsHelper(BaseHelper):
 
     @classmethod
     async def list_course_topics(cls, request, context):
@@ -40,9 +24,35 @@ class CourseTopicsHelper:
             status_code, course_topics_or_error = await CourseTopicsCRUD.get_multi()
             if not status_code == 200:
                 raise Exception(status_code, course_topics_or_error)
+            list_resp = []
+            for course_topic in course_topics_or_error:
+                print(course_topic)
+                if course_topic.locale_id:
+                    status_code, locale_or_error = await LocalesCRUD.get(id=course_topic.locale_id)
+                    if not status_code == 200:
+                        raise Exception(status_code, locale_or_error)
 
-            list_resp = [await cls.make_response(CourseTopics, obj,
-                                                 ['id', 'name', 'description', 'sort', 'is_active']) for obj in course_topics_or_error]
+                    locales_resp = await cls.make_response(Locales, locale_or_error,
+                                                           ['id', 'name', 'code', 'is_main'])
+                else:
+                    locales_resp = None
+
+                if course_topic.parent_id:
+                    status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(id=course_topic.parent_id)
+                    if not status_code == 200:
+                        raise Exception(status_code, "parent_id not found!")
+
+                    course_topic_short_resp = cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
+                                                                ['id', 'name'])
+                else:
+                    course_topic_short_resp = None
+
+                list_resp.append(cls.make_response(
+                    CourseTopics, course_topic, ['id', 'name', 'description', 'sort', 'is_active'],
+                    {
+                        "parent": course_topic_short_resp, "locale": locales_resp,
+                        "created_at": cls.convert_to_timestamp(course_topic.created_at)
+                    }))
 
             list_course_topics_resp = ListCourseTopicsResponse(
                 success_payload=list_resp,
@@ -50,7 +60,7 @@ class CourseTopicsHelper:
             )
             return list_course_topics_resp
         except Exception as e:
-            return await cls.make_error_response(CourseTopicsResponse, e)
+            return cls.make_error_response(CourseTopicsResponse, e)
 
     @classmethod
     async def get_course_topics(cls, request, context):
@@ -59,28 +69,32 @@ class CourseTopicsHelper:
             if not status_code == 200:
                 raise Exception(status_code, course_topic_or_error)
 
-            status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(id=course_topic_or_error.parent_id)
-            if not status_code == 200:
-                raise Exception(status_code, course_topic_parent_or_error)
+            if course_topic_or_error.parent_id:
+                status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(
+                    id=course_topic_or_error.parent_id)
+                if not status_code == 200:
+                    raise Exception(status_code, course_topic_parent_or_error)
 
-            course_topic_short_resp = await cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
-                                                              ['id', 'name'])
+                course_topic_short_resp = cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
+                                                                  ['id', 'name'])
+            else:
+                course_topic_short_resp = None
 
             if course_topic_or_error.locale_id:
                 status_code, result_or_error = await LocalesCRUD.get(id=course_topic_or_error.locale_id)
                 if not status_code == 200:
                     raise Exception(status_code, result_or_error)
 
-                locales_resp = await cls.make_response(Locales, result_or_error,
+                locales_resp = cls.make_response(Locales, result_or_error,
                                                        ['id', 'name', 'code', 'is_main'])
             else:
                 locales_resp = None
 
-            course_topic_resp = await cls.make_response(
+            course_topic_resp = cls.make_response(
                 CourseTopics, course_topic_or_error, ['id', 'name', 'description', 'sort', 'is_active'],
                 {
                     "parent": course_topic_short_resp, "locale": locales_resp,
-                    "created_at": int(course_topic_or_error.created_at.strftime("%s"))
+                    "created_at": cls.convert_to_timestamp(course_topic_or_error.created_at)
                 })
 
             get_course_topic_resp = CourseTopicsResponse(
@@ -89,7 +103,7 @@ class CourseTopicsHelper:
             )
             return get_course_topic_resp
         except Exception as e:
-            return await cls.make_error_response(CourseTopicsResponse, e)
+            return cls.make_error_response(CourseTopicsResponse, e)
 
     @classmethod
     async def create_course_topics(cls, request, context):
@@ -109,7 +123,7 @@ class CourseTopicsHelper:
                 if not status_code == 200:
                     raise Exception(status_code, "parent_id not found!")
 
-                course_topic_short_resp = await cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
+                course_topic_short_resp = cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
                                                                   ['id', 'name'])
             else:
                 course_topic_short_resp = None
@@ -123,11 +137,11 @@ class CourseTopicsHelper:
             if not status_code == 200:
                 raise Exception(status_code, course_topic_or_error)
 
-            course_topic_resp = await cls.make_response(
+            course_topic_resp = cls.make_response(
                 CourseTopics, course_topic_or_error, ['id', 'name', 'description', 'sort', 'is_active'],
                 {
                     "parent": course_topic_short_resp, "locale": locales_resp,
-                    "created_at": int(course_topic_or_error.created_at.strftime("%s"))
+                    "created_at": cls.convert_to_timestamp(course_topic_or_error.created_at)
                 })
 
             create_course_topic_resp = CourseTopicsResponse(
@@ -136,7 +150,7 @@ class CourseTopicsHelper:
             )
             return create_course_topic_resp
         except Exception as e:
-            return await cls.make_error_response(CourseTopicsResponse, e)
+            return cls.make_error_response(CourseTopicsResponse, e)
 
     @classmethod
     async def check_db(cls):
