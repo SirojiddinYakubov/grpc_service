@@ -8,13 +8,17 @@ from helpers import CourseTopicsHelper
 
 
 class CourseServicer(courses_pb2_grpc.CourseServiceServicer):
-    async def CreateCourseTopics(self, request, context):
+    async def ListCourseTopics(self, request, context):
         print("CourseServicer received request")
-        return await CourseTopicsHelper.create_course_topics(request, context)
+        return await CourseTopicsHelper.list_course_topics(request, context)
 
     async def GetCourseTopics(self, request, context):
         print("CourseServicer received request")
         return await CourseTopicsHelper.get_course_topics(request, context)
+
+    async def CreateCourseTopics(self, request, context):
+        print("CourseServicer received request")
+        return await CourseTopicsHelper.create_course_topics(request, context)
 
 
 async def serve():

@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Type, TypeVar, Union
+from typing import Optional, Type, TypeVar, Union, List
 from uuid import UUID
 
 from sqlalchemy import select
@@ -26,6 +26,24 @@ class CRUDBase:
                     return 200, obj
                 else:
                     return 404, f"{self.model.__table__} object not found!"
+        except Exception as e:
+            logging.error(e)
+            return 500, "Internal server error"
+
+    async def get_multi(
+            self,
+            *,
+            skip: int = 0,
+            limit: int = 100,
+            # query: Optional[Union[T, Select[T]]] = None,
+    ):
+        try:
+            async with async_session() as db:
+                # db_session = db_session or db.session
+                # if query is None:
+                query = select(self.model).offset(skip).limit(limit).order_by(self.model.id)
+                response = await db.execute(query)
+                return 200, response.scalars().all()
         except Exception as e:
             logging.error(e)
             return 500, "Internal server error"

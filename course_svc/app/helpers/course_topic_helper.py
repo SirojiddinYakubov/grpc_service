@@ -8,7 +8,8 @@ from app.grpc_generated_files.locales_types_pb2 import (
 from app.grpc_generated_files.courses_types_pb2 import (
     CourseTopicsShort,
     CourseTopics,
-    CourseTopicsResponse
+    CourseTopicsResponse,
+    ListCourseTopicsResponse
 )
 
 # from app.models import Roles, Permissions, RolePermissions, Users, UserRoles
@@ -32,6 +33,24 @@ class CourseTopicsHelper:
     @classmethod
     async def make_response(cls, model, obj, fields, other={}):
         return model(**{f: getattr(obj, f) for f in fields}, **other)
+
+    @classmethod
+    async def list_course_topics(cls, request, context):
+        try:
+            status_code, course_topics_or_error = await CourseTopicsCRUD.get_multi()
+            if not status_code == 200:
+                raise Exception(status_code, course_topics_or_error)
+
+            list_resp = [await cls.make_response(CourseTopics, obj,
+                                                 ['id', 'name', 'description', 'sort', 'is_active']) for obj in course_topics_or_error]
+
+            list_course_topics_resp = ListCourseTopicsResponse(
+                success_payload=list_resp,
+                status_code=status_code
+            )
+            return list_course_topics_resp
+        except Exception as e:
+            return await cls.make_error_response(CourseTopicsResponse, e)
 
     @classmethod
     async def get_course_topics(cls, request, context):

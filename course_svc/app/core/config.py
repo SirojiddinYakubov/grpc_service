@@ -3,8 +3,6 @@ from typing import Optional, Dict, Any, Union
 
 from pydantic import BaseSettings, PostgresDsn, validator
 
-print({pathlib.Path(__file__).parents[3]})
-
 
 class Settings(BaseSettings):
     SVC_PORT: Union[str, int]

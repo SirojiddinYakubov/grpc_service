@@ -21,7 +21,7 @@ async def create_test_db():
 DATABASE_URI = settings.ASYNC_DATABASE_URI
 if "pytest" in modules:
     DATABASE_URI = settings.ASYNC_TEST_DATABASE_URI
-print(DATABASE_URI)
+
 async_engine = create_async_engine(
     DATABASE_URI,
     echo=False,

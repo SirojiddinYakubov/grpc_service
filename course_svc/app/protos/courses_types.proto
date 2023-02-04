@@ -37,3 +37,14 @@ message CourseTopicsResponse {
   string error_payload = 2;
   int32 status_code = 3;
 }
+
+message ListCourseTopicsRequest {
+  int32 page = 1;
+  int32 size = 2;
+}
+
+message ListCourseTopicsResponse {
+  repeated CourseTopics success_payload = 1;
+  string error_payload = 2;
+  int32 status_code = 3;
+}

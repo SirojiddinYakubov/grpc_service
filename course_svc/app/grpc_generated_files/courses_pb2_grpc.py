@@ -14,6 +14,11 @@ class CourseServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.ListCourseTopics = channel.unary_unary(
+                '/CourseService/ListCourseTopics',
+                request_serializer=courses__types__pb2.ListCourseTopicsRequest.SerializeToString,
+                response_deserializer=courses__types__pb2.ListCourseTopicsResponse.FromString,
+                )
         self.GetCourseTopics = channel.unary_unary(
                 '/CourseService/GetCourseTopics',
                 request_serializer=courses__types__pb2.GetCourseTopicsRequest.SerializeToString,
@@ -29,9 +34,14 @@ class CourseServiceStub(object):
 class CourseServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
+    def ListCourseTopics(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GetCourseTopics(self, request, context):
-        """rpc ListCourseTopic (ListCourseTopicRequest) returns (CourseTopicResponse);
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -45,6 +55,11 @@ class CourseServiceServicer(object):
 
 def add_CourseServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'ListCourseTopics': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListCourseTopics,
+                    request_deserializer=courses__types__pb2.ListCourseTopicsRequest.FromString,
+                    response_serializer=courses__types__pb2.ListCourseTopicsResponse.SerializeToString,
+            ),
             'GetCourseTopics': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCourseTopics,
                     request_deserializer=courses__types__pb2.GetCourseTopicsRequest.FromString,
@@ -64,6 +79,23 @@ def add_CourseServiceServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class CourseService(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def ListCourseTopics(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/CourseService/ListCourseTopics',
+            courses__types__pb2.ListCourseTopicsRequest.SerializeToString,
+            courses__types__pb2.ListCourseTopicsResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def GetCourseTopics(request,
