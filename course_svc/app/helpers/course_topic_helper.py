@@ -1,115 +1,122 @@
 import logging
 
+import grpc
+from google.protobuf import empty_pb2, timestamp_pb2, json_format
 from app.crud.course_topics import CourseTopicsCRUD
-from app.db.session import async_session
-from app.grpc_generated_files.locales_types_pb2 import (
-    Locales
-)
 from app.grpc_generated_files.courses_types_pb2 import (
-    CourseTopicsShort,
-    CourseTopics,
-    CourseTopicsResponse,
+    CourseTopicShort,
+    CourseTopic,
     ListCourseTopicsResponse
 )
-
-from .base_helper import BaseHelper
+from google.protobuf.timestamp_pb2 import (
+    Timestamp
+)
+from app.grpc_generated_files.locales_types_pb2 import (
+    Locale
+)
 from crud.locales import LocalesCRUD
+from .base_helper import BaseHelper
 
 
 class CourseTopicsHelper(BaseHelper):
 
     @classmethod
-    async def list_course_topics(cls, request, context):
+    async def list_course_topics(cls, context, limit, offset):
         try:
-            status_code, course_topics_or_error = await CourseTopicsCRUD.get_multi()
-            if not status_code == 200:
-                raise Exception(status_code, course_topics_or_error)
-            list_resp = []
-            for course_topic in course_topics_or_error:
-                print(course_topic)
-                if course_topic.locale_id:
-                    status_code, locale_or_error = await LocalesCRUD.get(id=course_topic.locale_id)
-                    if not status_code == 200:
-                        raise Exception(status_code, locale_or_error)
-
-                    locales_resp = await cls.make_response(Locales, locale_or_error,
-                                                           ['id', 'name', 'code', 'is_main'])
-                else:
-                    locales_resp = None
-
-                if course_topic.parent_id:
-                    status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(id=course_topic.parent_id)
-                    if not status_code == 200:
-                        raise Exception(status_code, "parent_id not found!")
-
-                    course_topic_short_resp = cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
-                                                                ['id', 'name'])
-                else:
-                    course_topic_short_resp = None
-
-                list_resp.append(cls.make_response(
-                    CourseTopics, course_topic, ['id', 'name', 'description', 'sort', 'is_active'],
-                    {
-                        "parent": course_topic_short_resp, "locale": locales_resp,
-                        "created_at": cls.convert_to_timestamp(course_topic.created_at)
-                    }))
-
-            list_course_topics_resp = ListCourseTopicsResponse(
-                success_payload=list_resp,
-                status_code=status_code
-            )
-            return list_course_topics_resp
+            course_topics = await CourseTopicsCRUD.get_multi(context, limit=limit, offset=offset)
+            course_topics_resp = [await cls.get_course_topic(context, course_topic.id) for course_topic in
+                                  course_topics]
+            return ListCourseTopicsResponse(course_topics=course_topics_resp)
         except Exception as e:
-            return cls.make_error_response(CourseTopicsResponse, e)
+            logging.error(e)
+            await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
 
     @classmethod
-    async def get_course_topics(cls, request, context):
+    async def get_course_topic(cls, context, course_topic_id):
         try:
-            status_code, course_topic_or_error = await CourseTopicsCRUD.get(id=request.course_topic_id)
+            course_topic = await CourseTopicsCRUD.get(context, obj_id=course_topic_id)
+
+            if course_topic.parent_id:
+                parent = await CourseTopicsCRUD.get(context, obj_id=course_topic.parent_id)
+                parent_resp = CourseTopicShort(id=parent.id, name=parent.name)
+            else:
+                parent_resp = None
+
+            if course_topic.locale_id:
+                locale_obj = await LocalesCRUD.get(context, obj_id=course_topic.locale_id)
+                locale_resp = Locale(id=locale_obj.id, name=locale_obj.name,
+                                     code=locale_obj.code, is_main=locale_obj.is_main)
+            else:
+                locale_resp = None
+
+            course_topic_resp = CourseTopic(
+                id=course_topic.id, name=course_topic.name, description=course_topic.description,
+                parent=parent_resp, locale=locale_resp,
+                sort=course_topic.sort, created_at=Timestamp(seconds=int(course_topic.created_at.timestamp()))
+            )
+            return course_topic_resp
+        except Exception as e:
+            logging.error(e)
+            await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
+
+    @classmethod
+    async def create_course_topic(cls, context, validated_data):
+        try:
+            if validated_data.parent_id:
+                parent = await CourseTopicsCRUD.get(context, obj_id=validated_data.parent_id)
+                parent_resp = CourseTopicShort(id=parent.id, name=parent.name)
+            else:
+                parent_resp = None
+
+            if validated_data.locale_id:
+                locale_obj = await LocalesCRUD.get(context, obj_id=validated_data.locale_id)
+                locale_resp = Locale(id=locale_obj.id, name=locale_obj.name,
+                                     code=locale_obj.code, is_main=locale_obj.is_main)
+            else:
+                locale_resp = None
+
+            course_topic = await CourseTopicsCRUD.create(
+                context,
+                name=validated_data.name,
+                description=validated_data.description,
+                parent_id=validated_data.parent_id if validated_data.parent_id else None,
+                locale_id=validated_data.locale_id if validated_data.locale_id else None,
+            )
+
+            course_topic_resp = CourseTopic(
+                id=course_topic.id, name=course_topic.name, description=course_topic.description,
+                parent=parent_resp, locale=locale_resp,
+                sort=course_topic.sort, created_at=Timestamp(seconds=int(course_topic.created_at.timestamp()))
+            )
+            return course_topic_resp
+        except Exception as e:
+            logging.error(e)
+            raise await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
+
+    @classmethod
+    async def update_course_topic(cls, request, context):
+        try:
+
+            obj_data = {
+                "name": request.name if request.name else None,
+                "description": request.description if request.description else None,
+                "sort": request.sort if request.sort else None,
+            }
+            if hasattr(request, "is_active"):
+                obj_data.update(is_active=request.is_active)
+
+            if request.locale_id:
+                obj_data.update(locale_id=request.locale_id)
+
+            if request.parent_id:
+                obj_data.update(parent_id=request.parent_id)
+
+            status_code, course_topic_or_error = await CourseTopicsCRUD.update(obj_id=request.id, **obj_data)
             if not status_code == 200:
                 raise Exception(status_code, course_topic_or_error)
 
-            if course_topic_or_error.parent_id:
-                status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(
-                    id=course_topic_or_error.parent_id)
-                if not status_code == 200:
-                    raise Exception(status_code, course_topic_parent_or_error)
-
-                course_topic_short_resp = cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
-                                                                  ['id', 'name'])
-            else:
-                course_topic_short_resp = None
-
-            if course_topic_or_error.locale_id:
-                status_code, result_or_error = await LocalesCRUD.get(id=course_topic_or_error.locale_id)
-                if not status_code == 200:
-                    raise Exception(status_code, result_or_error)
-
-                locales_resp = cls.make_response(Locales, result_or_error,
-                                                       ['id', 'name', 'code', 'is_main'])
-            else:
-                locales_resp = None
-
-            course_topic_resp = cls.make_response(
-                CourseTopics, course_topic_or_error, ['id', 'name', 'description', 'sort', 'is_active'],
-                {
-                    "parent": course_topic_short_resp, "locale": locales_resp,
-                    "created_at": cls.convert_to_timestamp(course_topic_or_error.created_at)
-                })
-
-            get_course_topic_resp = CourseTopicsResponse(
-                success_payload=course_topic_resp,
-                status_code=status_code
-            )
-            return get_course_topic_resp
-        except Exception as e:
-            return cls.make_error_response(CourseTopicsResponse, e)
-
-    @classmethod
-    async def create_course_topics(cls, request, context):
-        try:
             if request.locale_id:
-                status_code, locale_or_error = await LocalesCRUD.get(id=request.locale_id)
+                status_code, locale_or_error = await LocalesCRUD.get(obj_id=request.locale_id)
                 if not status_code == 200:
                     raise Exception(status_code, locale_or_error)
 
@@ -119,23 +126,14 @@ class CourseTopicsHelper(BaseHelper):
                 locales_resp = None
 
             if request.parent_id:
-                status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(id=request.parent_id)
+                status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(obj_id=request.parent_id)
                 if not status_code == 200:
                     raise Exception(status_code, "parent_id not found!")
 
                 course_topic_short_resp = cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
-                                                                  ['id', 'name'])
+                                                            ['id', 'name'])
             else:
                 course_topic_short_resp = None
-
-            status_code, course_topic_or_error = await CourseTopicsCRUD.create_course_topic(
-                name=request.name,
-                description=request.description,
-                parent_id=request.parent_id if request.parent_id else None,
-                locale_id=request.locale_id if request.locale_id else None,
-            )
-            if not status_code == 200:
-                raise Exception(status_code, course_topic_or_error)
 
             course_topic_resp = cls.make_response(
                 CourseTopics, course_topic_or_error, ['id', 'name', 'description', 'sort', 'is_active'],
@@ -151,48 +149,3 @@ class CourseTopicsHelper(BaseHelper):
             return create_course_topic_resp
         except Exception as e:
             return cls.make_error_response(CourseTopicsResponse, e)
-
-    @classmethod
-    async def check_db(cls):
-        async with async_session() as db:
-            pass
-            # uz = Locales(name="O'zbek tili", code="uz", is_main=True)
-            # ru = Locales(name="Rus tili", code="ru")
-            #
-            # db.add(uz)
-            # db.add(ru)
-            # await db.commit()
-            #
-            # topic_uz = CourseTopics(name="Backend", description="desc", locale_id=uz.id)
-            # topic_ru = CourseTopics(name="Бекенд", description="desc", locale_id=ru.id, parent_id=uz.id)
-            #
-            # db.add(topic_uz)
-            # db.add(topic_ru)
-            # await db.commit()
-
-            # locale_statement = select(Locales).where(Locales.code == "uz")
-            # locale_result = await db.execute(locale_statement)
-            # locale = locale_result.one()[0]
-            # await db.delete(locale)
-            # await db.commit()
-            # # query = select(CourseTopics).where(is_(CourseTopics.parent_id, None))
-            # query = select(CourseTopics).where(CourseTopics.locale_id == locale_id)
-            # result = await db.execute(query)
-            # topic = result.all()
-            # print(topic)
-
-            # role = Roles(role_name="moderator", display_name="Moderator")
-            # permission = Permissions(permission_name="edit_course", display_name="Edit Course")
-            #
-            # role_permission = RolePermissions(role_id=role.id, permission_id=permission.id)
-            #
-            # user = Users(email="yakubov9791999@gmail.com")
-            #
-            # user_roles = UserRoles(user_id=user.id, role_id=role.id)
-            #
-            # db.add(role)
-            # db.add(permission)
-            # db.add(role_permission)
-            # db.add(user)
-            # db.add(user_roles)
-            # await db.commit()

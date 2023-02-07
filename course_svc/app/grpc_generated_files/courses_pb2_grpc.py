@@ -19,15 +19,20 @@ class CourseServiceStub(object):
                 request_serializer=courses__types__pb2.ListCourseTopicsRequest.SerializeToString,
                 response_deserializer=courses__types__pb2.ListCourseTopicsResponse.FromString,
                 )
-        self.GetCourseTopics = channel.unary_unary(
-                '/CourseService/GetCourseTopics',
-                request_serializer=courses__types__pb2.GetCourseTopicsRequest.SerializeToString,
-                response_deserializer=courses__types__pb2.CourseTopicsResponse.FromString,
+        self.GetCourseTopic = channel.unary_unary(
+                '/CourseService/GetCourseTopic',
+                request_serializer=courses__types__pb2.GetCourseTopicRequest.SerializeToString,
+                response_deserializer=courses__types__pb2.CourseTopic.FromString,
                 )
-        self.CreateCourseTopics = channel.unary_unary(
-                '/CourseService/CreateCourseTopics',
-                request_serializer=courses__types__pb2.CreateCourseTopicsRequest.SerializeToString,
-                response_deserializer=courses__types__pb2.CourseTopicsResponse.FromString,
+        self.CreateCourseTopic = channel.unary_unary(
+                '/CourseService/CreateCourseTopic',
+                request_serializer=courses__types__pb2.CreateCourseTopicRequest.SerializeToString,
+                response_deserializer=courses__types__pb2.CourseTopic.FromString,
+                )
+        self.UpdateCourseTopic = channel.unary_unary(
+                '/CourseService/UpdateCourseTopic',
+                request_serializer=courses__types__pb2.UpdateCourseTopicRequest.SerializeToString,
+                response_deserializer=courses__types__pb2.CourseTopic.FromString,
                 )
 
 
@@ -40,13 +45,19 @@ class CourseServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetCourseTopics(self, request, context):
+    def GetCourseTopic(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def CreateCourseTopics(self, request, context):
+    def CreateCourseTopic(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateCourseTopic(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -60,15 +71,20 @@ def add_CourseServiceServicer_to_server(servicer, server):
                     request_deserializer=courses__types__pb2.ListCourseTopicsRequest.FromString,
                     response_serializer=courses__types__pb2.ListCourseTopicsResponse.SerializeToString,
             ),
-            'GetCourseTopics': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetCourseTopics,
-                    request_deserializer=courses__types__pb2.GetCourseTopicsRequest.FromString,
-                    response_serializer=courses__types__pb2.CourseTopicsResponse.SerializeToString,
+            'GetCourseTopic': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetCourseTopic,
+                    request_deserializer=courses__types__pb2.GetCourseTopicRequest.FromString,
+                    response_serializer=courses__types__pb2.CourseTopic.SerializeToString,
             ),
-            'CreateCourseTopics': grpc.unary_unary_rpc_method_handler(
-                    servicer.CreateCourseTopics,
-                    request_deserializer=courses__types__pb2.CreateCourseTopicsRequest.FromString,
-                    response_serializer=courses__types__pb2.CourseTopicsResponse.SerializeToString,
+            'CreateCourseTopic': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateCourseTopic,
+                    request_deserializer=courses__types__pb2.CreateCourseTopicRequest.FromString,
+                    response_serializer=courses__types__pb2.CourseTopic.SerializeToString,
+            ),
+            'UpdateCourseTopic': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateCourseTopic,
+                    request_deserializer=courses__types__pb2.UpdateCourseTopicRequest.FromString,
+                    response_serializer=courses__types__pb2.CourseTopic.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -98,7 +114,7 @@ class CourseService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetCourseTopics(request,
+    def GetCourseTopic(request,
             target,
             options=(),
             channel_credentials=None,
@@ -108,14 +124,14 @@ class CourseService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/CourseService/GetCourseTopics',
-            courses__types__pb2.GetCourseTopicsRequest.SerializeToString,
-            courses__types__pb2.CourseTopicsResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/CourseService/GetCourseTopic',
+            courses__types__pb2.GetCourseTopicRequest.SerializeToString,
+            courses__types__pb2.CourseTopic.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def CreateCourseTopics(request,
+    def CreateCourseTopic(request,
             target,
             options=(),
             channel_credentials=None,
@@ -125,8 +141,25 @@ class CourseService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/CourseService/CreateCourseTopics',
-            courses__types__pb2.CreateCourseTopicsRequest.SerializeToString,
-            courses__types__pb2.CourseTopicsResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/CourseService/CreateCourseTopic',
+            courses__types__pb2.CreateCourseTopicRequest.SerializeToString,
+            courses__types__pb2.CourseTopic.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def UpdateCourseTopic(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/CourseService/UpdateCourseTopic',
+            courses__types__pb2.UpdateCourseTopicRequest.SerializeToString,
+            courses__types__pb2.CourseTopic.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -2,7 +2,7 @@ syntax = "proto3";
 package locales;
 
 
-message Locales {
+message Locale {
   int32 id = 1;
   string name = 2;
   string code = 3;
@@ -10,3 +10,14 @@ message Locales {
 }
 
 
+
+
+message GetLocaleRequest {
+  int32 locale_id = 1;
+}
+
+message LocaleResponse {
+  Locale success_payload = 1;
+  string error_payload = 2;
+  int32 status_code = 3;
+}

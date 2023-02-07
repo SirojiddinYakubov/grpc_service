@@ -12,27 +12,28 @@ _sym_db = _symbol_database.Default()
 
 
 from . import locales_types_pb2 as locales__types__pb2
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x63ourses_types.proto\x12\x07\x63ourses\x1a\x13locales_types.proto\"\xe8\x01\n\x0c\x43ourseTopics\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12*\n\x06parent\x18\x04 \x01(\x0b\x32\x1a.courses.CourseTopicsShort\x12 \n\x06locale\x18\x05 \x01(\x0b\x32\x10.locales.Locales\x12\x11\n\tis_active\x18\x06 \x01(\x08\x12\x0c\n\x04sort\x18\x07 \x01(\x05\x12\x12\n\ncreated_at\x18\x08 \x01(\x03\x12\x12\n\nupdated_at\x18\t \x01(\x03\x12\x12\n\ndeleted_at\x18\n \x01(\x03\"-\n\x11\x43ourseTopicsShort\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\"1\n\x16GetCourseTopicsRequest\x12\x17\n\x0f\x63ourse_topic_id\x18\x01 \x01(\x03\"d\n\x19\x43reateCourseTopicsRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tparent_id\x18\x03 \x01(\x03\x12\x11\n\tlocale_id\x18\x04 \x01(\x05\"r\n\x14\x43ourseTopicsResponse\x12.\n\x0fsuccess_payload\x18\x01 \x01(\x0b\x32\x15.courses.CourseTopics\x12\x15\n\rerror_payload\x18\x02 \x01(\t\x12\x13\n\x0bstatus_code\x18\x03 \x01(\x05\"5\n\x17ListCourseTopicsRequest\x12\x0c\n\x04page\x18\x01 \x01(\x05\x12\x0c\n\x04size\x18\x02 \x01(\x05\"v\n\x18ListCourseTopicsResponse\x12.\n\x0fsuccess_payload\x18\x01 \x03(\x0b\x32\x15.courses.CourseTopics\x12\x15\n\rerror_payload\x18\x02 \x01(\t\x12\x13\n\x0bstatus_code\x18\x03 \x01(\x05\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x63ourses_types.proto\x12\x07\x63ourses\x1a\x13locales_types.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb9\x02\n\x0b\x43ourseTopic\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12)\n\x06parent\x18\x04 \x01(\x0b\x32\x19.courses.CourseTopicShort\x12\x1f\n\x06locale\x18\x05 \x01(\x0b\x32\x0f.locales.Locale\x12\x11\n\tis_active\x18\x06 \x01(\x08\x12\x0c\n\x04sort\x18\x07 \x01(\x05\x12.\n\ncreated_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\t \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\ndeleted_at\x18\n \x01(\x0b\x32\x1a.google.protobuf.Timestamp\",\n\x10\x43ourseTopicShort\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\"0\n\x15GetCourseTopicRequest\x12\x17\n\x0f\x63ourse_topic_id\x18\x01 \x01(\x03\"c\n\x18\x43reateCourseTopicRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tparent_id\x18\x03 \x01(\x03\x12\x11\n\tlocale_id\x18\x04 \x01(\x05\"8\n\x17ListCourseTopicsRequest\x12\r\n\x05limit\x18\x01 \x01(\x05\x12\x0e\n\x06offset\x18\x02 \x01(\x03\"\x90\x01\n\x18UpdateCourseTopicRequest\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x11\n\tparent_id\x18\x04 \x01(\x03\x12\x11\n\tlocale_id\x18\x05 \x01(\x05\x12\x11\n\tis_active\x18\x06 \x01(\x08\x12\x0c\n\x04sort\x18\x07 \x01(\x05\"G\n\x18ListCourseTopicsResponse\x12+\n\rcourse_topics\x18\x01 \x03(\x0b\x32\x14.courses.CourseTopicb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'courses_types_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _COURSETOPICS._serialized_start=54
-  _COURSETOPICS._serialized_end=286
-  _COURSETOPICSSHORT._serialized_start=288
-  _COURSETOPICSSHORT._serialized_end=333
-  _GETCOURSETOPICSREQUEST._serialized_start=335
-  _GETCOURSETOPICSREQUEST._serialized_end=384
-  _CREATECOURSETOPICSREQUEST._serialized_start=386
-  _CREATECOURSETOPICSREQUEST._serialized_end=486
-  _COURSETOPICSRESPONSE._serialized_start=488
-  _COURSETOPICSRESPONSE._serialized_end=602
-  _LISTCOURSETOPICSREQUEST._serialized_start=604
-  _LISTCOURSETOPICSREQUEST._serialized_end=657
-  _LISTCOURSETOPICSRESPONSE._serialized_start=659
-  _LISTCOURSETOPICSRESPONSE._serialized_end=777
+  _COURSETOPIC._serialized_start=87
+  _COURSETOPIC._serialized_end=400
+  _COURSETOPICSHORT._serialized_start=402
+  _COURSETOPICSHORT._serialized_end=446
+  _GETCOURSETOPICREQUEST._serialized_start=448
+  _GETCOURSETOPICREQUEST._serialized_end=496
+  _CREATECOURSETOPICREQUEST._serialized_start=498
+  _CREATECOURSETOPICREQUEST._serialized_end=597
+  _LISTCOURSETOPICSREQUEST._serialized_start=599
+  _LISTCOURSETOPICSREQUEST._serialized_end=655
+  _UPDATECOURSETOPICREQUEST._serialized_start=658
+  _UPDATECOURSETOPICREQUEST._serialized_end=802
+  _LISTCOURSETOPICSRESPONSE._serialized_start=804
+  _LISTCOURSETOPICSRESPONSE._serialized_end=875
 # @@protoc_insertion_point(module_scope)

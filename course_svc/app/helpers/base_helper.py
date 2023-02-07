@@ -24,3 +24,7 @@ class BaseHelper:
     @classmethod
     def convert_to_timestamp(cls, value: Union[datetime, date]) -> int:
         return int(value.strftime("%s"))
+
+
+
+

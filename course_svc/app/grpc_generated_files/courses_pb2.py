@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 from . import courses_types_pb2 as courses__types__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcourses.proto\x1a\x13\x63ourses_types.proto2\x94\x02\n\rCourseService\x12W\n\x10ListCourseTopics\x12 .courses.ListCourseTopicsRequest\x1a!.courses.ListCourseTopicsResponse\x12Q\n\x0fGetCourseTopics\x12\x1f.courses.GetCourseTopicsRequest\x1a\x1d.courses.CourseTopicsResponse\x12W\n\x12\x43reateCourseTopics\x12\".courses.CreateCourseTopicsRequest\x1a\x1d.courses.CourseTopicsResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcourses.proto\x1a\x13\x63ourses_types.proto2\xcc\x02\n\rCourseService\x12W\n\x10ListCourseTopics\x12 .courses.ListCourseTopicsRequest\x1a!.courses.ListCourseTopicsResponse\x12\x46\n\x0eGetCourseTopic\x12\x1e.courses.GetCourseTopicRequest\x1a\x14.courses.CourseTopic\x12L\n\x11\x43reateCourseTopic\x12!.courses.CreateCourseTopicRequest\x1a\x14.courses.CourseTopic\x12L\n\x11UpdateCourseTopic\x12!.courses.UpdateCourseTopicRequest\x1a\x14.courses.CourseTopicb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'courses_pb2', globals())
@@ -22,5 +22,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _COURSESERVICE._serialized_start=39
-  _COURSESERVICE._serialized_end=315
+  _COURSESERVICE._serialized_end=371
 # @@protoc_insertion_point(module_scope)

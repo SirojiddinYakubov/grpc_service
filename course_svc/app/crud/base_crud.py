@@ -1,11 +1,13 @@
 import logging
-from typing import Optional, Type, TypeVar, Union, List
+from typing import Optional, Type, TypeVar, Union
 from uuid import UUID
 
+import grpc
+from sqlalchemy import exc
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.session import async_session
+
 
 ModelType = TypeVar("ModelType")
 
@@ -14,36 +16,62 @@ class CRUDBase:
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
-    async def get(
-            self, *, id: Union[UUID, str, int], db_session: Optional[AsyncSession] = None
-    ) -> Optional[ModelType]:
+    async def get(self, context, obj_id: Union[UUID, str, int]) -> Optional[ModelType]:
         try:
             async with async_session() as db:
-                query = select(self.model).where(self.model.id == id)
+                query = select(self.model).where(self.model.id == obj_id)
                 response = await db.execute(query)
                 obj = response.scalar_one_or_none()
-                if obj:
-                    return 200, obj
-                else:
-                    return 404, f"{self.model.__table__} object not found!"
+                if not obj:
+                    await context.abort(grpc.StatusCode.NOT_FOUND, f"{self.model.__table__} object not found!")
+                return obj
         except Exception as e:
             logging.error(e)
-            return 500, "Internal server error"
+            await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
 
-    async def get_multi(
-            self,
-            *,
-            skip: int = 0,
-            limit: int = 100,
-            # query: Optional[Union[T, Select[T]]] = None,
-    ):
+    async def get_multi(self, context, limit: int = 10, offset: int = 1):
         try:
             async with async_session() as db:
-                # db_session = db_session or db.session
-                # if query is None:
-                query = select(self.model).offset(skip).limit(limit).order_by(self.model.id)
+                query = select(self.model).offset(offset).limit(limit).order_by(self.model.id)
                 response = await db.execute(query)
-                return 200, response.scalars().all()
+                return response.scalars().all()
+        except Exception as e:
+            logging.error(e)
+            raise await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
+
+    async def create(self, context, **obj_data):
+        try:
+            async with async_session() as db:
+                db_obj = self.model(**obj_data)
+                try:
+                    db.add(db_obj)
+                    await db.commit()
+                except exc.IntegrityError:
+                    db.rollback()
+                    raise await context.abort(grpc.StatusCode.ALREADY_EXISTS, f"{self.model.__table__} object already exists!")
+                await db.refresh(db_obj)
+                return db_obj
+        except Exception as e:
+            logging.error(e)
+            raise await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
+
+    async def update(self, obj_id, **obj_data):
+        try:
+            async with async_session() as db:
+                query = select(self.model).where(self.model.id == obj_id)
+                response = await db.execute(query)
+                obj = response.scalar_one_or_none()
+                if not obj:
+                    return 404, f"{self.model.__table__} object not found!"
+                print(obj_data)
+                obj_data = {k:v for k,v in obj_data.items() if v is not None}
+                print(obj_data)
+                for key, value in obj_data.items():
+                    setattr(obj, key, value)
+                db.add(obj)
+                await db.commit()
+                await db.refresh(obj)
+                return 200, obj
         except Exception as e:
             logging.error(e)
             return 500, "Internal server error"

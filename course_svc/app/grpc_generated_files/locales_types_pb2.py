@@ -13,13 +13,17 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13locales_types.proto\x12\x07locales\"B\n\x07Locales\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04\x63ode\x18\x03 \x01(\t\x12\x0f\n\x07is_main\x18\x04 \x01(\x08\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13locales_types.proto\x12\x07locales\"A\n\x06Locale\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04\x63ode\x18\x03 \x01(\t\x12\x0f\n\x07is_main\x18\x04 \x01(\x08\"%\n\x10GetLocaleRequest\x12\x11\n\tlocale_id\x18\x01 \x01(\x05\"f\n\x0eLocaleResponse\x12(\n\x0fsuccess_payload\x18\x01 \x01(\x0b\x32\x0f.locales.Locale\x12\x15\n\rerror_payload\x18\x02 \x01(\t\x12\x13\n\x0bstatus_code\x18\x03 \x01(\x05\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'locales_types_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _LOCALES._serialized_start=32
-  _LOCALES._serialized_end=98
+  _LOCALE._serialized_start=32
+  _LOCALE._serialized_end=97
+  _GETLOCALEREQUEST._serialized_start=99
+  _GETLOCALEREQUEST._serialized_end=136
+  _LOCALERESPONSE._serialized_start=138
+  _LOCALERESPONSE._serialized_end=240
 # @@protoc_insertion_point(module_scope)

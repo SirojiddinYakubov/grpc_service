@@ -1,8 +1,10 @@
 syntax = "proto3";
 import "courses_types.proto";
+//import "locales_types.proto";
 
 service CourseService {
   rpc ListCourseTopics (courses.ListCourseTopicsRequest) returns (courses.ListCourseTopicsResponse);
-  rpc GetCourseTopics (courses.GetCourseTopicsRequest) returns (courses.CourseTopicsResponse);
-  rpc CreateCourseTopics (courses.CreateCourseTopicsRequest) returns (courses.CourseTopicsResponse);
+  rpc GetCourseTopic (courses.GetCourseTopicRequest) returns (courses.CourseTopic);
+  rpc CreateCourseTopic (courses.CreateCourseTopicRequest) returns (courses.CourseTopic);
+  rpc UpdateCourseTopic (courses.UpdateCourseTopicRequest) returns (courses.CourseTopic);
 }
