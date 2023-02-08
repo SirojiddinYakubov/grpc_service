@@ -8,7 +8,6 @@ from sqlalchemy import select
 
 from db.session import async_session
 
-
 ModelType = TypeVar("ModelType")
 
 
@@ -48,30 +47,21 @@ class CRUDBase:
                     await db.commit()
                 except exc.IntegrityError:
                     db.rollback()
-                    raise await context.abort(grpc.StatusCode.ALREADY_EXISTS, f"{self.model.__table__} object already exists!")
+                    raise await context.abort(grpc.StatusCode.ALREADY_EXISTS,
+                                              f"{self.model.__table__} object already exists!")
                 await db.refresh(db_obj)
                 return db_obj
         except Exception as e:
             logging.error(e)
             raise await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
 
-    async def update(self, obj_id, **obj_data):
+    async def update(self, context, updated_obj):
         try:
             async with async_session() as db:
-                query = select(self.model).where(self.model.id == obj_id)
-                response = await db.execute(query)
-                obj = response.scalar_one_or_none()
-                if not obj:
-                    return 404, f"{self.model.__table__} object not found!"
-                print(obj_data)
-                obj_data = {k:v for k,v in obj_data.items() if v is not None}
-                print(obj_data)
-                for key, value in obj_data.items():
-                    setattr(obj, key, value)
-                db.add(obj)
+                db.add(updated_obj)
                 await db.commit()
-                await db.refresh(obj)
-                return 200, obj
+                await db.refresh(updated_obj)
+                return updated_obj
         except Exception as e:
             logging.error(e)
-            return 500, "Internal server error"
+            await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")

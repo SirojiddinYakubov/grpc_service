@@ -2,6 +2,7 @@ syntax = "proto3";
 package courses;
 import "locales_types.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
 
 message CourseTopic {
   int64 id = 1;
@@ -37,14 +38,19 @@ message ListCourseTopicsRequest {
   int64 offset = 2;
 }
 
-message UpdateCourseTopicRequest {
-  int64 id = 1;
+message UpdateCourseTopic {
   string name = 2;
   string description = 3;
   int64 parent_id = 4;
   int32 locale_id = 5;
   bool is_active = 6;
   int32 sort = 7;
+}
+
+message UpdateCourseTopicRequest {
+  int64 course_topic_id = 1;
+  UpdateCourseTopic course_topic = 2;
+  google.protobuf.FieldMask mask = 3;
 }
 
 message ListCourseTopicsResponse {

@@ -11,7 +11,7 @@ from grpc_generated_files import courses_pb2_grpc
 from helpers import CourseTopicsHelper
 from google.protobuf import empty_pb2, timestamp_pb2, json_format
 
-from schemas.course_topics import CreateCourseTopic
+from schemas.course_topics import RPCCreateCourseTopicSchema, RPCUpdateCourseTopicSchema, RPCGetCourseTopicSchema
 
 
 class CourseServicer(courses_pb2_grpc.CourseServiceServicer):
@@ -21,22 +21,33 @@ class CourseServicer(courses_pb2_grpc.CourseServiceServicer):
 
     async def GetCourseTopic(self, request, context):
         print("CourseServicer received request")
-        if not getattr(request, "course_topic_id"):
-            raise await context.abort(grpc.StatusCode.INVALID_ARGUMENT, "course_topic_id required!")
-        return await CourseTopicsHelper.get_course_topic(context, course_topic_id=request.course_topic_id)
+        data = json_format.MessageToDict(request, preserving_proto_field_name=True)
+        data.update(extra_ctx={'context': context})
+        try:
+            valid_data = RPCGetCourseTopicSchema(**data)
+        except ValidationError as exc:
+            raise await context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(exc))
+        return await CourseTopicsHelper.get_course_topic(context, valid_data.course_topic_id)
 
     async def CreateCourseTopic(self, request, context):
         print("CourseServicer received request")
         data = json_format.MessageToDict(request, preserving_proto_field_name=True)
+        data.update(extra_ctx={'context': context})
         try:
-            validated_data = CreateCourseTopic(**data)
+            validated_data = RPCCreateCourseTopicSchema(**data)
         except ValidationError as exc:
             raise await context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(exc))
         return await CourseTopicsHelper.create_course_topic(context, validated_data)
 
     async def UpdateCourseTopic(self, request, context):
         print("CourseServicer received request")
-        return await CourseTopicsHelper.update_course_topic(request, context)
+        data = json_format.MessageToDict(request, preserving_proto_field_name=True)
+        try:
+            RPCUpdateCourseTopicSchema(**data)
+            return await CourseTopicsHelper.update_course_topic(context, request)
+        except ValidationError as exc:
+            raise await context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(exc))
+
 
 
 async def serve():

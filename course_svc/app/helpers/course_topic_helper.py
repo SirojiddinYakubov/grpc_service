@@ -14,11 +14,22 @@ from google.protobuf.timestamp_pb2 import (
 from app.grpc_generated_files.locales_types_pb2 import (
     Locale
 )
+
 from crud.locales import LocalesCRUD
 from .base_helper import BaseHelper
 
 
 class CourseTopicsHelper(BaseHelper):
+
+    @classmethod
+    async def get_parent_by_id(cls, context, parent_id):
+        parent = await CourseTopicsCRUD.get(context, obj_id=parent_id)
+        return CourseTopicShort(id=parent.id, name=parent.name)
+
+    @classmethod
+    async def get_locale_by_id(cls, context, locale_id):
+        locale_obj = await LocalesCRUD.get(context, obj_id=locale_id)
+        return Locale(id=locale_obj.id, name=locale_obj.name, code=locale_obj.code, is_main=locale_obj.is_main)
 
     @classmethod
     async def list_course_topics(cls, context, limit, offset):
@@ -32,22 +43,15 @@ class CourseTopicsHelper(BaseHelper):
             await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
 
     @classmethod
-    async def get_course_topic(cls, context, course_topic_id):
+    async def get_course_topic(cls, context, obj_id):
         try:
-            course_topic = await CourseTopicsCRUD.get(context, obj_id=course_topic_id)
+            course_topic = await CourseTopicsCRUD.get(context, obj_id=int(obj_id))
 
-            if course_topic.parent_id:
-                parent = await CourseTopicsCRUD.get(context, obj_id=course_topic.parent_id)
-                parent_resp = CourseTopicShort(id=parent.id, name=parent.name)
-            else:
-                parent_resp = None
+            parent_resp = await cls.get_parent_by_id(context, parent_id=getattr(course_topic, 'parent_id')) if getattr(
+                course_topic, 'parent_id') else None
 
-            if course_topic.locale_id:
-                locale_obj = await LocalesCRUD.get(context, obj_id=course_topic.locale_id)
-                locale_resp = Locale(id=locale_obj.id, name=locale_obj.name,
-                                     code=locale_obj.code, is_main=locale_obj.is_main)
-            else:
-                locale_resp = None
+            locale_resp = await cls.get_locale_by_id(context, locale_id=getattr(course_topic, 'locale_id')) if getattr(
+                course_topic, 'locale_id') else None
 
             course_topic_resp = CourseTopic(
                 id=course_topic.id, name=course_topic.name, description=course_topic.description,
@@ -60,92 +64,50 @@ class CourseTopicsHelper(BaseHelper):
             await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
 
     @classmethod
-    async def create_course_topic(cls, context, validated_data):
+    async def create_course_topic(cls, context, valid_data):
         try:
-            if validated_data.parent_id:
-                parent = await CourseTopicsCRUD.get(context, obj_id=validated_data.parent_id)
-                parent_resp = CourseTopicShort(id=parent.id, name=parent.name)
-            else:
-                parent_resp = None
-
-            if validated_data.locale_id:
-                locale_obj = await LocalesCRUD.get(context, obj_id=validated_data.locale_id)
-                locale_resp = Locale(id=locale_obj.id, name=locale_obj.name,
-                                     code=locale_obj.code, is_main=locale_obj.is_main)
-            else:
-                locale_resp = None
+            parent_resp = await getattr(valid_data, 'parent') if getattr(valid_data, 'parent') else None
+            locale_resp = await getattr(valid_data, 'locale') if getattr(valid_data, 'locale') else None
 
             course_topic = await CourseTopicsCRUD.create(
                 context,
-                name=validated_data.name,
-                description=validated_data.description,
-                parent_id=validated_data.parent_id if validated_data.parent_id else None,
-                locale_id=validated_data.locale_id if validated_data.locale_id else None,
+                name=valid_data.name, description=valid_data.description,
+                parent_id=getattr(parent_resp, 'id', None), locale_id=getattr(locale_resp, 'id', None),
             )
 
             course_topic_resp = CourseTopic(
                 id=course_topic.id, name=course_topic.name, description=course_topic.description,
-                parent=parent_resp, locale=locale_resp,
-                sort=course_topic.sort, created_at=Timestamp(seconds=int(course_topic.created_at.timestamp()))
+                parent=parent_resp, locale=locale_resp, sort=course_topic.sort,
+                created_at=Timestamp(seconds=int(course_topic.created_at.timestamp()))
             )
             return course_topic_resp
         except Exception as e:
             logging.error(e)
-            raise await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
+            await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
 
     @classmethod
-    async def update_course_topic(cls, request, context):
+    async def update_course_topic(cls, context, request):
         try:
+            obj_id = request.course_topic_id
+            mask = request.mask
+            updated_obj = request.course_topic
+            original_obj = await CourseTopicsCRUD.get(context, obj_id=int(obj_id))
+            mask.MergeMessage(updated_obj, original_obj)
+            course_topic = await CourseTopicsCRUD.update(context, original_obj)
 
-            obj_data = {
-                "name": request.name if request.name else None,
-                "description": request.description if request.description else None,
-                "sort": request.sort if request.sort else None,
-            }
-            if hasattr(request, "is_active"):
-                obj_data.update(is_active=request.is_active)
+            parent_resp = await cls.get_parent_by_id(context, parent_id=getattr(course_topic, 'parent_id')) if getattr(
+                course_topic, 'parent_id') else None
 
-            if request.locale_id:
-                obj_data.update(locale_id=request.locale_id)
+            locale_resp = await cls.get_locale_by_id(context, locale_id=getattr(course_topic, 'locale_id')) if getattr(
+                course_topic, 'locale_id') else None
 
-            if request.parent_id:
-                obj_data.update(parent_id=request.parent_id)
-
-            status_code, course_topic_or_error = await CourseTopicsCRUD.update(obj_id=request.id, **obj_data)
-            if not status_code == 200:
-                raise Exception(status_code, course_topic_or_error)
-
-            if request.locale_id:
-                status_code, locale_or_error = await LocalesCRUD.get(obj_id=request.locale_id)
-                if not status_code == 200:
-                    raise Exception(status_code, locale_or_error)
-
-                locales_resp = await cls.make_response(Locales, locale_or_error,
-                                                       ['id', 'name', 'code', 'is_main'])
-            else:
-                locales_resp = None
-
-            if request.parent_id:
-                status_code, course_topic_parent_or_error = await CourseTopicsCRUD.get(obj_id=request.parent_id)
-                if not status_code == 200:
-                    raise Exception(status_code, "parent_id not found!")
-
-                course_topic_short_resp = cls.make_response(CourseTopicsShort, course_topic_parent_or_error,
-                                                            ['id', 'name'])
-            else:
-                course_topic_short_resp = None
-
-            course_topic_resp = cls.make_response(
-                CourseTopics, course_topic_or_error, ['id', 'name', 'description', 'sort', 'is_active'],
-                {
-                    "parent": course_topic_short_resp, "locale": locales_resp,
-                    "created_at": cls.convert_to_timestamp(course_topic_or_error.created_at)
-                })
-
-            create_course_topic_resp = CourseTopicsResponse(
-                success_payload=course_topic_resp,
-                status_code=status_code
+            course_topic_resp = CourseTopic(
+                id=course_topic.id, name=course_topic.name, description=course_topic.description,
+                parent=parent_resp, locale=locale_resp,
+                sort=course_topic.sort,
+                created_at=Timestamp(seconds=int(course_topic.created_at.timestamp()))
             )
-            return create_course_topic_resp
+            return course_topic_resp
         except Exception as e:
-            return cls.make_error_response(CourseTopicsResponse, e)
+            logging.error(e)
+            await context.abort(grpc.StatusCode.INTERNAL, "Internal server error")
