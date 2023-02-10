@@ -1,29 +1,24 @@
-import logging
-from datetime import datetime, date
-from typing import Union
+import datetime
+
+from google.protobuf.timestamp_pb2 import (
+    Timestamp
+)
 
 
 class BaseHelper:
     @classmethod
-    def make_error_response(cls, model, e):
-        logging.error(e)
-        if len(e.args) == 2:
-            status_code, message = e.args
-        else:
-            status_code, message = 500, "Internal server error"
-        response = model(
-            error_payload=message,
-            status_code=status_code
-        )
-        return response
+    async def get_async_attr_or_none(cls, obj, attr):
+        if not hasattr(obj, attr) or not getattr(obj, attr):
+            return None
+        return await getattr(obj, attr)
 
     @classmethod
-    def make_response(cls, model, obj, fields, other=None):
-        return model(**{f: getattr(obj, f) for f in fields}, **other if other else {})
-
-    @classmethod
-    def convert_to_timestamp(cls, value: Union[datetime, date]) -> int:
-        return int(value.strftime("%s"))
+    def get_timestamp_or_none(cls, obj, attr):
+        if not hasattr(obj, attr) or not getattr(obj, attr):
+            return None
+        if not isinstance(getattr(obj, attr), datetime.datetime) or not isinstance(getattr(obj, attr), datetime.date):
+            return None
+        return Timestamp(seconds=int(getattr(obj, attr).timestamp()))
 
 
 

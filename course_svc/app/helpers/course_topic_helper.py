@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 import grpc
@@ -8,9 +7,7 @@ from app.grpc_generated_files.courses_types_pb2 import (
     CourseTopic,
     ListCourseTopicsResponse
 )
-from google.protobuf.timestamp_pb2 import (
-    Timestamp
-)
+
 from google.protobuf.empty_pb2 import (
     Empty
 )
@@ -37,20 +34,6 @@ class CourseTopicsHelper(BaseHelper):
             return None
         locale_obj = await LocalesCRUD.get(context, obj_id=getattr(obj, 'locale_id'))
         return Locale(id=locale_obj.id, name=locale_obj.name, code=locale_obj.code, is_main=locale_obj.is_main)
-
-    @classmethod
-    async def get_async_attr_or_none(cls, obj, attr):
-        if not hasattr(obj, attr) or not getattr(obj, attr):
-            return None
-        return await getattr(obj, attr)
-
-    @classmethod
-    def get_timestamp_or_none(cls, obj, attr):
-        if not hasattr(obj, attr) or not getattr(obj, attr):
-            return None
-        if not isinstance(getattr(obj, attr), datetime.datetime) or not isinstance(getattr(obj, attr), datetime.date):
-            return None
-        return Timestamp(seconds=int(getattr(obj, attr).timestamp()))
 
     @classmethod
     async def list_course_topics(cls, context, page_number, page_size, order_by, desc):
@@ -124,8 +107,7 @@ class CourseTopicsHelper(BaseHelper):
                                             parent=parent_resp, locale=locale_resp,
                                             sort=course_topic.sort, is_active=course_topic.is_active,
                                             created_at=cls.get_timestamp_or_none(course_topic, 'created_at'),
-                                            updated_at=cls.get_timestamp_or_none(course_topic, 'updated_at')
-                                            )
+                                            updated_at=cls.get_timestamp_or_none(course_topic, 'updated_at'))
             return course_topic_resp
         except Exception as e:
             logging.error(e)
