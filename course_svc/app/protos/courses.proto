@@ -1,10 +1,12 @@
 syntax = "proto3";
 import "courses_types.proto";
 //import "locales_types.proto";
+import "google/protobuf/empty.proto";
 
 service CourseService {
   rpc ListCourseTopics (courses.ListCourseTopicsRequest) returns (courses.ListCourseTopicsResponse);
   rpc GetCourseTopic (courses.GetCourseTopicRequest) returns (courses.CourseTopic);
   rpc CreateCourseTopic (courses.CreateCourseTopicRequest) returns (courses.CourseTopic);
   rpc UpdateCourseTopic (courses.UpdateCourseTopicRequest) returns (courses.CourseTopic);
+  rpc DeleteCourseTopic (courses.DeleteCourseTopicRequest) returns (google.protobuf.Empty);
 }

@@ -34,8 +34,10 @@ message CreateCourseTopicRequest {
 }
 
 message ListCourseTopicsRequest {
-  int32 limit = 1;
-  int64 offset = 2;
+  int32 page_number = 1;
+  int32 page_size = 2;
+  string order_by = 3;
+  bool desc = 4;
 }
 
 message UpdateCourseTopic {
@@ -54,5 +56,13 @@ message UpdateCourseTopicRequest {
 }
 
 message ListCourseTopicsResponse {
-  repeated CourseTopic course_topics = 1;
+  int32 page_number = 1;
+  int32 page_size = 2;
+  int32 num_pages = 3;
+  int64 total_results = 4;
+  repeated CourseTopic results = 5;
+}
+
+message DeleteCourseTopicRequest {
+  int64 course_topic_id = 1;
 }

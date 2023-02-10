@@ -44,11 +44,11 @@ def optional(*fields):
     return dec
 
 
-class RPCGetCourseTopicSchema(BaseSchema):
+class GetCourseTopicSchema(BaseSchema):
     course_topic_id: Union[str, int]
 
 
-class RPCCreateCourseTopicSchema(BaseSchema):
+class CreateCourseTopicSchema(BaseSchema):
     name: str
     description: Optional[str]
     parent: Optional[str] = Field(alias="parent_id")
@@ -77,7 +77,18 @@ class RPCCreateCourseTopicSchema(BaseSchema):
         return get_parent(v)
 
 
-class RPCUpdateCourseTopicSchema(BaseSchema):
+class ListCourseTopicSchema(BaseSchema):
+    page_number: Optional[int] = Field(default=1)
+    page_size: Optional[int] = Field(default=10)
+    order_by: Optional[str] = Field(default='id')
+    desc: Optional[bool] = Field(default=False)
+
+
+class UpdateCourseTopicSchema(BaseSchema):
     course_topic_id: Union[str, int]
     course_topic: dict
     mask: str
+
+
+class DeleteCourseTopicSchema(BaseSchema):
+    course_topic_id: Union[str, int]

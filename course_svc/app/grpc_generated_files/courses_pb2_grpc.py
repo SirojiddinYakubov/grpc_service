@@ -3,6 +3,7 @@
 import grpc
 
 from . import courses_types_pb2 as courses__types__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class CourseServiceStub(object):
@@ -34,6 +35,11 @@ class CourseServiceStub(object):
                 request_serializer=courses__types__pb2.UpdateCourseTopicRequest.SerializeToString,
                 response_deserializer=courses__types__pb2.CourseTopic.FromString,
                 )
+        self.DeleteCourseTopic = channel.unary_unary(
+                '/CourseService/DeleteCourseTopic',
+                request_serializer=courses__types__pb2.DeleteCourseTopicRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                )
 
 
 class CourseServiceServicer(object):
@@ -63,6 +69,12 @@ class CourseServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeleteCourseTopic(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_CourseServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -85,6 +97,11 @@ def add_CourseServiceServicer_to_server(servicer, server):
                     servicer.UpdateCourseTopic,
                     request_deserializer=courses__types__pb2.UpdateCourseTopicRequest.FromString,
                     response_serializer=courses__types__pb2.CourseTopic.SerializeToString,
+            ),
+            'DeleteCourseTopic': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteCourseTopic,
+                    request_deserializer=courses__types__pb2.DeleteCourseTopicRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -161,5 +178,22 @@ class CourseService(object):
         return grpc.experimental.unary_unary(request, target, '/CourseService/UpdateCourseTopic',
             courses__types__pb2.UpdateCourseTopicRequest.SerializeToString,
             courses__types__pb2.CourseTopic.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteCourseTopic(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/CourseService/DeleteCourseTopic',
+            courses__types__pb2.DeleteCourseTopicRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

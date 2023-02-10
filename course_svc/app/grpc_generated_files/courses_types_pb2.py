@@ -16,7 +16,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from google.protobuf import field_mask_pb2 as google_dot_protobuf_dot_field__mask__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x63ourses_types.proto\x12\x07\x63ourses\x1a\x13locales_types.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\"\xb9\x02\n\x0b\x43ourseTopic\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12)\n\x06parent\x18\x04 \x01(\x0b\x32\x19.courses.CourseTopicShort\x12\x1f\n\x06locale\x18\x05 \x01(\x0b\x32\x0f.locales.Locale\x12\x11\n\tis_active\x18\x06 \x01(\x08\x12\x0c\n\x04sort\x18\x07 \x01(\x05\x12.\n\ncreated_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\t \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\ndeleted_at\x18\n \x01(\x0b\x32\x1a.google.protobuf.Timestamp\",\n\x10\x43ourseTopicShort\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\"0\n\x15GetCourseTopicRequest\x12\x17\n\x0f\x63ourse_topic_id\x18\x01 \x01(\x03\"c\n\x18\x43reateCourseTopicRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tparent_id\x18\x03 \x01(\x03\x12\x11\n\tlocale_id\x18\x04 \x01(\x05\"8\n\x17ListCourseTopicsRequest\x12\r\n\x05limit\x18\x01 \x01(\x05\x12\x0e\n\x06offset\x18\x02 \x01(\x03\"}\n\x11UpdateCourseTopic\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x11\n\tparent_id\x18\x04 \x01(\x03\x12\x11\n\tlocale_id\x18\x05 \x01(\x05\x12\x11\n\tis_active\x18\x06 \x01(\x08\x12\x0c\n\x04sort\x18\x07 \x01(\x05\"\x8f\x01\n\x18UpdateCourseTopicRequest\x12\x17\n\x0f\x63ourse_topic_id\x18\x01 \x01(\x03\x12\x30\n\x0c\x63ourse_topic\x18\x02 \x01(\x0b\x32\x1a.courses.UpdateCourseTopic\x12(\n\x04mask\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.FieldMask\"G\n\x18ListCourseTopicsResponse\x12+\n\rcourse_topics\x18\x01 \x03(\x0b\x32\x14.courses.CourseTopicb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x63ourses_types.proto\x12\x07\x63ourses\x1a\x13locales_types.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\"\xb9\x02\n\x0b\x43ourseTopic\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12)\n\x06parent\x18\x04 \x01(\x0b\x32\x19.courses.CourseTopicShort\x12\x1f\n\x06locale\x18\x05 \x01(\x0b\x32\x0f.locales.Locale\x12\x11\n\tis_active\x18\x06 \x01(\x08\x12\x0c\n\x04sort\x18\x07 \x01(\x05\x12.\n\ncreated_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\t \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\ndeleted_at\x18\n \x01(\x0b\x32\x1a.google.protobuf.Timestamp\",\n\x10\x43ourseTopicShort\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0c\n\x04name\x18\x02 \x01(\t\"0\n\x15GetCourseTopicRequest\x12\x17\n\x0f\x63ourse_topic_id\x18\x01 \x01(\x03\"c\n\x18\x43reateCourseTopicRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x11\n\tparent_id\x18\x03 \x01(\x03\x12\x11\n\tlocale_id\x18\x04 \x01(\x05\"a\n\x17ListCourseTopicsRequest\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x11\n\tpage_size\x18\x02 \x01(\x05\x12\x10\n\x08order_by\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x65sc\x18\x04 \x01(\x08\"}\n\x11UpdateCourseTopic\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x11\n\tparent_id\x18\x04 \x01(\x03\x12\x11\n\tlocale_id\x18\x05 \x01(\x05\x12\x11\n\tis_active\x18\x06 \x01(\x08\x12\x0c\n\x04sort\x18\x07 \x01(\x05\"\x8f\x01\n\x18UpdateCourseTopicRequest\x12\x17\n\x0f\x63ourse_topic_id\x18\x01 \x01(\x03\x12\x30\n\x0c\x63ourse_topic\x18\x02 \x01(\x0b\x32\x1a.courses.UpdateCourseTopic\x12(\n\x04mask\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.FieldMask\"\x93\x01\n\x18ListCourseTopicsResponse\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x11\n\tpage_size\x18\x02 \x01(\x05\x12\x11\n\tnum_pages\x18\x03 \x01(\x05\x12\x15\n\rtotal_results\x18\x04 \x01(\x03\x12%\n\x07results\x18\x05 \x03(\x0b\x32\x14.courses.CourseTopic\"3\n\x18\x44\x65leteCourseTopicRequest\x12\x17\n\x0f\x63ourse_topic_id\x18\x01 \x01(\x03\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'courses_types_pb2', globals())
@@ -32,11 +32,13 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _CREATECOURSETOPICREQUEST._serialized_start=532
   _CREATECOURSETOPICREQUEST._serialized_end=631
   _LISTCOURSETOPICSREQUEST._serialized_start=633
-  _LISTCOURSETOPICSREQUEST._serialized_end=689
-  _UPDATECOURSETOPIC._serialized_start=691
-  _UPDATECOURSETOPIC._serialized_end=816
-  _UPDATECOURSETOPICREQUEST._serialized_start=819
-  _UPDATECOURSETOPICREQUEST._serialized_end=962
-  _LISTCOURSETOPICSRESPONSE._serialized_start=964
-  _LISTCOURSETOPICSRESPONSE._serialized_end=1035
+  _LISTCOURSETOPICSREQUEST._serialized_end=730
+  _UPDATECOURSETOPIC._serialized_start=732
+  _UPDATECOURSETOPIC._serialized_end=857
+  _UPDATECOURSETOPICREQUEST._serialized_start=860
+  _UPDATECOURSETOPICREQUEST._serialized_end=1003
+  _LISTCOURSETOPICSRESPONSE._serialized_start=1006
+  _LISTCOURSETOPICSRESPONSE._serialized_end=1153
+  _DELETECOURSETOPICREQUEST._serialized_start=1155
+  _DELETECOURSETOPICREQUEST._serialized_end=1206
 # @@protoc_insertion_point(module_scope)
